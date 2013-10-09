@@ -25,4 +25,5 @@ matrix:
 before_script:
   - if [[ "$FUTURES" == "yes" ]]; then pip install futures; fi
 script: "python setup.py nosetests"
-service: mongodb
+service:
+  - mongodb
