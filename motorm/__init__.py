@@ -20,6 +20,7 @@ import sys
 __all__ = ['AsyncModel', 'connect']
 
 _db = None
+BATCH = 5
 
 
 def connect(db, io_loop=None):
@@ -76,6 +77,27 @@ class AsyncManager(object):
     def filter(self, query):
         cursor = _db[self.collection].find(query)
         return AsyncManagerCursor(self.cls, cursor)
+
+    @return_future
+    def all(self, callback):
+
+        return_list = []
+
+        def handle_all_response(response, error, return_list):
+            if error:
+                raise error
+            else:
+                if response:
+                    return_list += [self.cls(document) for document in response]
+                    cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+                else:
+                    callback(return_list)
+
+        cursor = _db[self.collection].find({})
+
+        cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+
+        # callback(return_list)
 
 
 class AsyncManagerMetaClass(ModelMeta):

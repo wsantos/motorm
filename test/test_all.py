@@ -2,7 +2,7 @@ from tornado.testing import gen_test, AsyncTestCase
 from tornado import gen
 from tornado.ioloop import IOLoop
 import motorm
-from motorm import connect, _db
+from motorm import connect
 from schematics.types import StringType
 import motor
 import pymongo
@@ -11,12 +11,14 @@ from tornado.concurrent import return_future
 
 db_test = "motorm_test"
 
+
 class TestModel(motorm.AsyncModel):
     __collection__ = "AsyncModelTests"
     name = StringType()
 
 
 class TesteAll(AsyncTestCase):
+
     @gen_test
     def test_async_save(self):
         """Teste async save of a model"""
@@ -39,7 +41,8 @@ class TesteAll(AsyncTestCase):
         tm2.name = "iter_name2"
         instances.append((yield tm2.save()))
 
-        tm_cursor = TestModel.objects.filter({"name": {"$regex": "iter_name."}})
+        tm_cursor = TestModel.objects.filter(
+            {"name": {"$regex": "iter_name."}})
         on_result = []
         while (yield tm_cursor.fetch_next):
             tm_instance = tm_cursor.next_object()
@@ -74,11 +77,25 @@ class TesteAll(AsyncTestCase):
 
         self.assertIsNotNone(tm_fromdb)
 
+    @gen_test
+    def test_async_all(self):
+        connect(db_test, self.io_loop)
+
+        for i in range(10):
+            tm = TestModel()
+            tm.name = "alltest-%s" % i
+            yield tm.save()
+
+        tm_list = yield TestModel.objects.all()
+        print tm_list
+        self.assertEqual(len(tm_list), 10, "List must be equal 10")
+
+
 def tearDownModule():
         @gen.engine
         def drop_database():
             mc = connect(db_test, io_loop=IOLoop.instance())
-            yield gen.Task(mc.drop_database,db_test)
+            yield gen.Task(mc.drop_database, db_test)
             IOLoop.instance().stop()
         drop_database()
         IOLoop.instance().start()
