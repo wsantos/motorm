@@ -21,5 +21,9 @@ matrix:
       env: FUTURES=yes
 before_script:
   - if [[ "$FUTURES" == "yes" ]]; then pip install futures; fi
-script: "python setup.py nosetests"
+script: "coverage run --source motorm -m py.test"
+
+after_success:
+    coveralls
+
 services: mongodb
