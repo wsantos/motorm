@@ -91,6 +91,24 @@ class TesteAll(AsyncTestCase):
         self.assertEqual(len(tm_list), 10, "List must be equal 10")
 
 
+    @gen_test
+    def test_async_cursor_all(self):
+        connect(db_test, self.io_loop)
+
+        instances = []
+        tm = TestModel()
+        tm.name = "iter_all_name1"
+        instances.append((yield tm.save()))
+        tm2 = TestModel()
+        tm2.name = "iter_all_name2"
+        instances.append((yield tm2.save()))
+
+        tm_cursor_all = yield TestModel.objects.filter(
+            {"name": {"$regex": "iter_all_name."}}).all()
+
+        self.assertEqual(len(tm_cursor_all), 2, "List must be equal 2")
+
+
 def tearDownModule():
         @gen.engine
         def drop_database():

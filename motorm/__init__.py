@@ -47,6 +47,23 @@ class AsyncManagerCursor(object):
         return self.cls(result)
 
 
+    @return_future
+    def all(self, callback):
+
+        return_list = []
+
+        def handle_all_response(response, error, return_list):
+            if error:
+                raise error
+            else:
+                if response:
+                    return_list += [self.cls(document) for document in response]
+                    self.cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+                else:
+                    callback(return_list)
+
+        self.cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+
 class AsyncManager(object):
 
     def __init__(self, cls, collection):
@@ -96,9 +113,6 @@ class AsyncManager(object):
         cursor = _db[self.collection].find({})
 
         cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
-
-        # callback(return_list)
-
 
 class AsyncManagerMetaClass(ModelMeta):
 
