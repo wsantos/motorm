@@ -65,6 +65,19 @@ class TesteAll(AsyncTestCase):
         self.assertIsNotNone(tm_fromdb)
 
     @gen_test
+    def test_async_get_custom_field(self):
+        connect(db_test, self.io_loop)
+
+        tm = TestModel()
+        tm.name = "name1_custom"
+        yield tm.save()
+
+        tm_fromdb = yield TestModel.objects.get(name=tm.name)
+
+        self.assertIsNotNone(tm_fromdb)
+
+
+    @gen_test
     def test_async_update(self):
         connect(db_test, self.io_loop)
 

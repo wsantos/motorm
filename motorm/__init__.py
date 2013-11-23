@@ -82,12 +82,15 @@ class AsyncManager(object):
 
         id = kwargs.pop("id", None)
 
+        qry = dict()
         if id:
             id = ObjectId(id) if not isinstance(id, ObjectId) else id
 
-        qry = dict(
-            _id=id
-        ).update(kwargs)
+            qry = dict(
+                _id=id
+            )
+
+        qry.update(kwargs)
 
         _db[self.collection].find_one(qry, callback=handle_get_response)
 
