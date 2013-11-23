@@ -1,2 +1,5 @@
 motor
 schematics
+pytest==2.3.4
+coverage
+python-coveralls
