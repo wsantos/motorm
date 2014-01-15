@@ -6,13 +6,7 @@ Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
 Development Status :: 4 - Beta
 Natural Language :: English
-Programming Language :: Python :: 2
-Programming Language :: Python :: 2.6
 Programming Language :: Python :: 2.7
-Programming Language :: Python :: 3
-Programming Language :: Python :: 3.1
-Programming Language :: Python :: 3.2
-Programming Language :: Python :: 3.3
 Operating System :: MacOS :: MacOS X
 Operating System :: Unix
 Programming Language :: Python
@@ -47,7 +41,7 @@ setup(name='motorm',
       classifiers=filter(None, classifiers.split('\n')),
       keywords='tornado motor mongodb mongo orm',
       # use python setup.py nosetests to test
-      setup_requires=['nose','schematics'],
+      setup_requires=['nose','motor','schematics'],
       **kwargs
 )
 

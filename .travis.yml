@@ -1,7 +1,6 @@
 language: python
 python:
   - "2.7"
-  - "pypy"
 
 # Futures were introduced in Python 3.2 in the `concurrent.futures` package.
 # This package has also been backported to older versions of Python and can be
