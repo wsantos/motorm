@@ -2,7 +2,7 @@ from tornado.testing import gen_test, AsyncTestCase
 from tornado import gen
 from tornado.ioloop import IOLoop
 import motorm
-from motorm import connect
+from motorm import connect, disconnect
 from schematics.types import StringType
 import motor
 import pymongo
@@ -28,6 +28,7 @@ class TesteAll(AsyncTestCase):
         tm_insance = yield tm.save()
 
         self.assertIsNotNone(tm_insance.id)
+        disconnect()
 
     @gen_test
     def teste_async_iter_cursor(self):
@@ -51,6 +52,7 @@ class TesteAll(AsyncTestCase):
                     on_result.append(True)
 
         self.assertEqual(sum(on_result), 2)
+        disconnect()
 
     @gen_test
     def test_async_get(self):
@@ -63,6 +65,7 @@ class TesteAll(AsyncTestCase):
         tm_fromdb = yield TestModel.objects.get(id=tm.id)
 
         self.assertIsNotNone(tm_fromdb)
+        disconnect()
 
     @gen_test
     def test_async_get_custom_field(self):
@@ -75,6 +78,8 @@ class TesteAll(AsyncTestCase):
         tm_fromdb = yield TestModel.objects.get(name=tm.name)
 
         self.assertIsNotNone(tm_fromdb)
+
+        disconnect()
 
 
     @gen_test
@@ -89,6 +94,7 @@ class TesteAll(AsyncTestCase):
         tm_fromdb = yield tm_fromdb.save()
 
         self.assertIsNotNone(tm_fromdb)
+        disconnect()
 
     @gen_test
     def test_async_all(self):
@@ -102,6 +108,7 @@ class TesteAll(AsyncTestCase):
         tm_list = yield TestModel.objects.all()
         print tm_list
         self.assertEqual(len(tm_list), 10, "List must be equal 10")
+        disconnect()
 
 
     @gen_test
@@ -120,6 +127,7 @@ class TesteAll(AsyncTestCase):
             {"name": {"$regex": "iter_all_name."}}).all()
 
         self.assertEqual(len(tm_cursor_all), 2, "List must be equal 2")
+        disconnect()
 
 
 def tearDownModule():

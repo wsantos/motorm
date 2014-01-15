@@ -20,16 +20,22 @@ import sys
 __all__ = ['AsyncModel', 'connect']
 
 _db = None
+_mc = None
 BATCH = 5
 
 
 def connect(db, io_loop=None):
     global _db
+    global _mc
+    
     mc = motor.MotorClient(io_loop=io_loop or None)
-
+    _mc = mc
     _db = mc.open_sync()[db]
     _db.write_concern = {'w': 1, 'wtimeout': 1000}
     return mc
+
+def disconnect():
+    _mc.disconnect()
 
 
 class AsyncManagerCursor(object):
