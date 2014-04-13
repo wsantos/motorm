@@ -7,6 +7,11 @@ Async Motor ORM
   :target: https://coveralls.io/r/wsantos/motorm?branch=master
   :alt: Coverage
 
+.. image:: https://travis-ci.org/wsantos/motorm.png
+  :target: http://travis-ci.org/wsantos/motorm
+  :alt: Coverage
+
+
 .. code-block:: python
 
     class Person(AsyncModel):
