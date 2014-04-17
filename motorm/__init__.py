@@ -136,8 +136,6 @@ class AsyncManagerMetaClass(ModelMeta):
         if not parents:
             return super_new(cls, name, bases, attrs)
         else:
-            # print attrs
-            # module = attrs.pop('__module__')
             if not "id" in attrs:
                 attrs["id"] = ObjectIdType(
                     serialized_name='_id', serialize_when_none=False)
@@ -156,7 +154,7 @@ class AsyncManagerMetaClass(ModelMeta):
 
             return new_class
 
-        return super_new(cls, name, bases, attrs)  # , uppercase_attr)
+        return super_new(cls, name, bases, attrs)
 
 
 class AsyncModel(Model):
