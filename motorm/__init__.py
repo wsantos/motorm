@@ -1,20 +1,14 @@
 #!/bin/env python
 from schematics.models import Model, ModelMeta
-from schematics.types import StringType
 from schematics.contrib.mongo import ObjectIdType
 
 #-- Tornado
-import tornado.ioloop
-import tornado.web
 from tornado.concurrent import return_future
-from tornado import gen
 
 #-- DB
 import motor
-import logging
 from bson.objectid import ObjectId
 import functools
-import sys
 
 
 __all__ = ['AsyncModel', 'connect']
@@ -34,6 +28,7 @@ def connect(db, io_loop=None):
     mc.write_concern = {'w': 1, 'wtimeout': 1000}
     return mc
 
+
 def disconnect():
     _mc.disconnect()
 
@@ -52,7 +47,6 @@ class AsyncManagerCursor(object):
         result = self.cursor.next_object()
         return self.cls(result)
 
-
     @return_future
     def all(self, callback):
 
@@ -63,12 +57,16 @@ class AsyncManagerCursor(object):
                 raise error
             else:
                 if response:
-                    return_list += [self.cls(document) for document in response]
-                    self.cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+                    return_list += [self.cls(document)
+                                    for document in response]
+                    self.cursor.to_list(
+                        BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
                 else:
                     callback(return_list)
 
-        self.cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+        self.cursor.to_list(BATCH, callback=functools.partial(
+            handle_all_response, return_list=return_list))
+
 
 class AsyncManager(object):
 
@@ -114,14 +112,18 @@ class AsyncManager(object):
                 raise error
             else:
                 if response:
-                    return_list += [self.cls(document) for document in response]
-                    cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+                    return_list += [self.cls(document)
+                                    for document in response]
+                    cursor.to_list(BATCH, callback=functools.partial(
+                        handle_all_response, return_list=return_list))
                 else:
                     callback(return_list)
 
         cursor = _db[self.collection].find({})
 
-        cursor.to_list(BATCH, callback=functools.partial(handle_all_response, return_list=return_list))
+        cursor.to_list(BATCH, callback=functools.partial(
+            handle_all_response, return_list=return_list))
+
 
 class AsyncManagerMetaClass(ModelMeta):
 
