@@ -55,6 +55,14 @@ Async Motor ORM
 
     >>> persons = yield Person.objects.filter({"name": {"$regex": "Jon.*"}}).all()
     
+or
+
+.. code-block:: python
+
+    >>> p_cursor = yield Person.objects.filter({"name": {"$regex": "Jon.*"}})
+    >>> persons = yield p_cursor.all()
+  
+    
 - Retrive all objects from database
 
 .. code-block:: python
