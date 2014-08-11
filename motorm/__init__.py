@@ -178,7 +178,8 @@ class AsyncModel(Model):
 
         self.validate()
 
-        if self._initial == {}:
+        if self._initial == {} or (self._initial != {} and
+                                   "id" not in self._initial):
             _db[self.__collection__].save(
                 self.serialize(), callback=handle_save_response)
         else:
