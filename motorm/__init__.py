@@ -82,7 +82,10 @@ class AsyncManager(object):
             if error:
                 raise error
             else:
-                callback(self.cls(response))
+                if response is None:
+                    callback(None)
+                else:
+                    callback(self.cls(response))
 
         id = kwargs.pop("id", None)
 
