@@ -186,7 +186,7 @@ class AsyncModel(Model):
             set_qry = dict()
             if self._initial != self._data:
                 for field, value in self._data.items():
-                    if not field in self._initial:
+                    if field not in self._initial:
                         set_qry[field] = value
                     else:
                         if value != self._initial[field]:
