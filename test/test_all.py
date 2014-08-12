@@ -31,6 +31,24 @@ class TesteAll(AsyncTestCase):
         disconnect()
 
     @gen_test
+    def test_async_delete(self):
+        """Teste async delete of a model"""
+        connect(db_test, self.io_loop)
+
+        tm = TestModel()
+        tm.name = "name1"
+        yield tm.save()
+        self.assertIsNotNone(tm.id)
+
+        yield tm.delete()
+
+        tm_fromdb = yield TestModel.objects.get(id=tm.id)
+
+        self.assertIsNone(tm_fromdb)
+
+        disconnect()
+
+    @gen_test
     def teste_async_iter_cursor(self):
         connect(db_test, self.io_loop)
 

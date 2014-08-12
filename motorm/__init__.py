@@ -163,6 +163,19 @@ class AsyncModel(Model):
     __metaclass__ = AsyncManagerMetaClass
 
     @return_future
+    def delete(self, **kwargs):
+        callback = kwargs.pop("callback")
+
+        def handle_delete_response(response, error):
+            if error:
+                raise error
+            else:
+                callback(self)
+
+        _db[self.__collection__].remove({"_id":self.id},
+                                        callback=handle_delete_response)
+
+    @return_future
     def save(self, **kwargs):
         callback = kwargs.pop("callback")
 
