@@ -179,6 +179,11 @@ class AsyncModel(Model):
     def save(self, **kwargs):
         callback = kwargs.pop("callback")
 
+        #Ensure ObjectId for _id
+        if self.id:
+            self.id = ObjectId(self.id) if not \
+                    isinstance(self.id, ObjectId) else self.id
+
         def handle_save_response(response, error):
             if error:
                 raise error
