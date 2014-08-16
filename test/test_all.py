@@ -124,7 +124,6 @@ class TesteAll(AsyncTestCase):
             yield tm.save()
 
         tm_list = yield TestModel.objects.all()
-        print tm_list
         self.assertEqual(len(tm_list), 10, "List must be equal 10")
         disconnect()
 
