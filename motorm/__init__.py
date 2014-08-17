@@ -206,7 +206,6 @@ class AsyncModel(Model):
         else:
             set_qry = dict()
             if self._initial != self._data:
-                for field, value in self._data.items():
                 for field, value in self.serialize().items():
                     if field not in self._initial:
                         set_qry[field] = value
@@ -214,5 +213,6 @@ class AsyncModel(Model):
                         if value != self._initial[field]:
                             set_qry[field] = value
 
+                set_qry.pop("_id", None)
                 _db[self.__collection__].update({"_id": self.id},
                                                 {"$set": set_qry}, callback=handle_update_response)

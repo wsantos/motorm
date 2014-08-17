@@ -109,6 +109,7 @@ class TesteAll(AsyncTestCase):
         yield tm.save()
 
         tm_fromdb = yield TestModel.objects.get(id=tm.id)
+        tm_fromdb.name = "new_name"
         tm_fromdb = yield tm_fromdb.save()
 
         self.assertIsNotNone(tm_fromdb)
