@@ -207,6 +207,7 @@ class AsyncModel(Model):
             set_qry = dict()
             if self._initial != self._data:
                 for field, value in self._data.items():
+                for field, value in self.serialize().items():
                     if field not in self._initial:
                         set_qry[field] = value
                     else:
