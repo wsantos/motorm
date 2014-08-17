@@ -1,8 +1,6 @@
 #!/bin/env python
 from schematics.models import Model, ModelMeta
 from schematics.contrib.mongo import ObjectIdType
-from pymongo.son_manipulator import SONManipulator
-from decimal import Decimal
 
 #-- Tornado
 from tornado.concurrent import return_future
@@ -18,25 +16,6 @@ __all__ = ['AsyncModel', 'connect']
 _db = None
 _mc = None
 BATCH = 5
-
-#FROM: https://gist.github.com/reedobrien/745735
-class DecimalTransform(SONManipulator):
-    def transform_incoming(self, son, collection):
-        for (key, value) in son.items():
-            if isinstance(value, Decimal):
-                son[key] = {'_type' : 'decimal', 'value' : unicode(value)}
-            elif isinstance(value, dict):
-                son[key] = self.transform_incoming(value, collection)
-        return son
-
-    def transform_outgoing(self, son, collection):
-        for (key, value) in son.items():
-            if isinstance(value, dict):
-                if "_type" in value and value["_type"] == "decimal":
-                   son[key] = Decimal(value['value'])
-                else:
-                   son[key] = self.transform_outgoing(value, collection)
-        return son
 
 def connect(db, io_loop=None):
     global _db
