@@ -1,6 +1,7 @@
 #!/bin/env python
 from schematics.models import Model, ModelMeta
 from schematics.contrib.mongo import ObjectIdType
+from tornado import gen
 
 #-- Tornado
 from tornado.concurrent import return_future
@@ -213,5 +214,10 @@ class AsyncModel(Model):
                             set_qry[field] = value
 
                 set_qry.pop("_id", None)
-                _db[self.__collection__].update({"_id": self.id},
-                                                {"$set": set_qry}, callback=handle_update_response)
+
+                if set_qry:
+                    _db[self.__collection__].update({"_id": self.id},
+                                                    {"$set": set_qry}, callback=handle_update_response)
+                else:
+                    raise gen.Return()
+
