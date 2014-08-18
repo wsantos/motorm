@@ -202,11 +202,11 @@ class AsyncModel(Model):
         if self._initial == {} or (self._initial != {} and
                                    self._data['id'] is None):
             _db[self.__collection__].save(
-                self.serialize(), callback=handle_save_response)
+                self.to_native(), callback=handle_save_response)
         else:
             set_qry = dict()
             if self._initial != self._data:
-                for field, value in self.serialize().items():
+                for field, value in self.to_native().items():
                     if field not in self._initial:
                         set_qry[field] = value
                     else:
