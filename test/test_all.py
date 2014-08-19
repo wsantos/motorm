@@ -49,6 +49,32 @@ class TesteAll(AsyncTestCase):
         disconnect()
 
     @gen_test
+    def teste_async_iter_cursor_with_sort(self):
+        connect(db_test, self.io_loop)
+
+        instances = []
+        tm = TestModel()
+        tm.name = "iter_order1"
+        instances.append((yield tm.save()))
+        tm2 = TestModel()
+        tm2.name = "iter_order2"
+        instances.append((yield tm2.save()))
+
+        tm_cursor = TestModel.objects.filter(
+            {"name": {"$regex": "^iter_order"}}).sort(
+                "name", pymongo.DESCENDING 
+            )
+
+        tm_result = []
+        while (yield tm_cursor.fetch_next):
+            tm_instance = tm_cursor.next_object()
+            tm_result.append(tm_instance)
+
+        self.assertEqual(len(tm_result), 2)
+        self.assertIn("order2", tm_result[0].name)
+        disconnect()
+
+    @gen_test
     def teste_async_iter_cursor(self):
         connect(db_test, self.io_loop)
 

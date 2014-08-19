@@ -47,6 +47,10 @@ class AsyncManagerCursor(object):
         result = self.cursor.next_object()
         return self.cls(result)
 
+    def sort(self, *args, **kwargs):
+        self.cursor = self.cursor.sort(*args, **kwargs)
+        return self
+
     @return_future
     def all(self, callback):
 
