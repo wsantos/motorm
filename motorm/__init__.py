@@ -143,7 +143,7 @@ class AsyncManagerMetaClass(ModelMeta):
         if not parents:
             return super_new(cls, name, bases, attrs)
         else:
-            if not "id" in attrs:
+            if "id" not in attrs:
                 attrs["id"] = ObjectIdType(
                     serialized_name='_id', serialize_when_none=False)
 
@@ -159,8 +159,6 @@ class AsyncManagerMetaClass(ModelMeta):
             setattr(new_class, "objects", manager)
 
             return new_class
-
-        return super_new(cls, name, bases, attrs)
 
 
 class AsyncModel(Model):
@@ -211,11 +209,8 @@ class AsyncModel(Model):
             set_qry = dict()
             if self._initial != self._data:
                 for field, value in self.to_native().items():
-                    if field not in self._initial:
+                    if value != self._initial[field]:
                         set_qry[field] = value
-                    else:
-                        if value != self._initial[field]:
-                            set_qry[field] = value
 
                 set_qry.pop("_id", None)
 
