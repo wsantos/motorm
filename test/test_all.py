@@ -4,12 +4,20 @@ from tornado.ioloop import IOLoop
 import motorm
 from motorm import connect, disconnect
 from schematics.types import StringType
-import motor
 import pymongo
 
-from tornado.concurrent import return_future
 
 db_test = "motorm_test"
+
+
+def setUpModule():
+    @gen.engine
+    def drop_database():
+        mc = connect(db_test, io_loop=IOLoop.instance())
+        yield gen.Task(mc.drop_database, db_test)
+        IOLoop.instance().stop()
+    drop_database()
+    IOLoop.instance().start()
 
 
 class TestModel(motorm.AsyncModel):
@@ -62,8 +70,8 @@ class TesteAll(AsyncTestCase):
 
         tm_cursor = TestModel.objects.filter(
             {"name": {"$regex": "^iter_order"}}).sort(
-                "name", pymongo.DESCENDING 
-            )
+                "name", pymongo.DESCENDING
+        )
 
         tm_result = []
         while (yield tm_cursor.fetch_next):
@@ -125,7 +133,6 @@ class TesteAll(AsyncTestCase):
 
         disconnect()
 
-
     @gen_test
     def test_async_update(self):
         connect(db_test, self.io_loop)
@@ -136,6 +143,20 @@ class TesteAll(AsyncTestCase):
 
         tm_fromdb = yield TestModel.objects.get(id=tm.id)
         tm_fromdb.name = "new_name"
+        tm_fromdb = yield tm_fromdb.save()
+
+        self.assertIsNotNone(tm_fromdb)
+        disconnect()
+
+    @gen_test
+    def test_async_update_without_change(self):
+        connect(db_test, self.io_loop)
+
+        tm = TestModel()
+        tm.name = "name1"
+        yield tm.save()
+
+        tm_fromdb = yield TestModel.objects.get(id=tm.id)
         tm_fromdb = yield tm_fromdb.save()
 
         self.assertIsNotNone(tm_fromdb)
@@ -153,7 +174,6 @@ class TesteAll(AsyncTestCase):
         tm_list = yield TestModel.objects.all()
         self.assertEqual(len(tm_list), 10, "List must be equal 10")
         disconnect()
-
 
     @gen_test
     def test_async_cursor_all(self):
@@ -173,12 +193,3 @@ class TesteAll(AsyncTestCase):
         self.assertEqual(len(tm_cursor_all), 2, "List must be equal 2")
         disconnect()
 
-
-def tearDownModule():
-        @gen.engine
-        def drop_database():
-            mc = connect(db_test, io_loop=IOLoop.instance())
-            yield gen.Task(mc.drop_database, db_test)
-            IOLoop.instance().stop()
-        drop_database()
-        IOLoop.instance().start()
