@@ -25,7 +25,27 @@ class TestModel(motorm.AsyncModel):
     name = StringType()
 
 
+class TestWOCModel(motorm.AsyncModel):
+    name = StringType()
+
+
+
 class TesteAll(AsyncTestCase):
+
+    @gen_test
+    def test_async_update_WOC(self):
+        connect(db_test, self.io_loop)
+
+        tm = TestWOCModel()
+        tm.name = "name1"
+        yield tm.save()
+
+        tm_fromdb = yield TestWOCModel.objects.get(id=tm.id)
+        tm_fromdb.name = "new_name"
+        tm_fromdb = yield tm_fromdb.save()
+
+        self.assertIsNotNone(tm_fromdb)
+        disconnect()
 
     @gen_test
     def test_async_save(self):

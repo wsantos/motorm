@@ -18,6 +18,7 @@ _db = None
 _mc = None
 BATCH = 5
 
+
 def connect(db, io_loop=None):
     global _db
     global _mc
@@ -149,6 +150,10 @@ class AsyncManagerMetaClass(ModelMeta):
 
             new_class = super_new(cls, name, bases, attrs)
 
+            # Collection name
+            attrs["__collection__"] = attrs.get(
+                "__collection__", name.replace("Model", "").lower())
+
             collection = attrs["__collection__"]
 
             # Add all attributes to the class.
@@ -174,17 +179,17 @@ class AsyncModel(Model):
             else:
                 callback(self)
 
-        _db[self.__collection__].remove({"_id":self.id},
+        _db[self.__collection__].remove({"_id": self.id},
                                         callback=handle_delete_response)
 
     @return_future
     def save(self, **kwargs):
         callback = kwargs.pop("callback")
 
-        #Ensure ObjectId for _id
+        # Ensure ObjectId for _id
         if self.id:
             self.id = ObjectId(self.id) if not \
-                    isinstance(self.id, ObjectId) else self.id
+                isinstance(self.id, ObjectId) else self.id
 
         def handle_save_response(response, error):
             if error:
@@ -219,4 +224,3 @@ class AsyncModel(Model):
                                                     {"$set": set_qry}, callback=handle_update_response)
                 else:
                     raise gen.Return()
-
